@@ -21,7 +21,17 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'status',
     ];
+
+    public function umkm() {
+        return $this->hasOne(Umkm::class);
+    }
+    
+    public function search() {
+        return $this->hasMany(Search::class);
+    }
 
     /**
      * The attributes that should be hidden for serialization.

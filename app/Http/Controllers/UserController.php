@@ -11,13 +11,21 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::when(request()->search, function ($users) {
-            $users = $users->where('name', 'like', '%' . request()->search . '%');
+        $search = $request->input('search');
+        
+        $users = User::when($search, function ($query, $search) {
+            return $query->where('name', 'like', "%{$search}%")
+                         ->orWhere('email', 'like', "%{$search}%")
+                         ->orWhere('role', 'like', "%{$search}%")
+                         ->orWhere('status', 'like', "%{$search}%");
         })->paginate(10);
-        return view('users.index', compact('users'))
-        ->with('i', (request()->input('page', 1) - 1) * 10);
+
+        // Hitung nomor urut
+        $i = ($users->currentPage() - 1) * $users->perPage() + 1;
+
+        return view('users.index', compact('users', 'i'));
     }
 
     /**
@@ -79,8 +87,10 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string',
             'email' => 'required|string|unique:users,email,'.$id,
-            // 'password' => 'required|string',
-            'password_confirmation' => 'nullable|same:password'
+            'password' => 'nullable|string',
+            'password_confirmation' => 'nullable|same:password',            
+            'role' => 'required|in:admin,umkm,public',
+            'status' => 'required|in:pending,verified,blocked',
         ]);
 
         try {
@@ -88,6 +98,8 @@ class UserController extends Controller
             // dd($user->first());
             $user->name = $request->name;
             $user->email = $request->email;
+            $user->role = $request->role;
+            $user->status = $request->status;
             if ($request->password){
                 $user->password = Hash::make($request->password);
             }
