@@ -22,6 +22,16 @@
                         {{ __('User Management') }}
                     </x-nav-link>
                 </div>
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('searchs.index')" :active="request()->routeIs('searchs.index')">
+                        {{ __('Search Management') }}
+                    </x-nav-link>
+                </div>
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('umkms.index')" :active="request()->routeIs('umkms.index')">
+                        {{ __('Umkm Management') }}
+                    </x-nav-link>
+                </div>
                 @endif
             </div>
 

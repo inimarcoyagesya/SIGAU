@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\UmkmController;
@@ -19,9 +20,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::resource('/users', UserController::class);
     Route::resource('/searchs', SearchController::class);
-    // routes/web.php
-Route::get('/umkm/register', [UmkmController::class, 'create'])->name('umkm.register');
-Route::post('/umkm/store', [UmkmController::class, 'store'])->name('umkm.store');
+    Route::resource('/umkms', UmkmController::class);
+    Route::resource('/inventories', InventoryController::class);
+
 });
 
 require __DIR__.'/auth.php';

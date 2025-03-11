@@ -33,69 +33,92 @@
 <body class="font-sans antialiased bg-gray-50 dark:bg-gray-900">
     <div class="min-h-screen flex flex-col">
         <!-- Navigation -->
-        <nav class="bg-gis-gradient shadow-lg">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-16">
-                    <div class="flex items-center">
-                        <!-- Logo -->
-                        <a href="{{ route('dashboard') }}" class="flex items-center space-x-2">
-                            <i class="fas fa-map-marker-alt text-white text-2xl"></i>
-                            <span class="text-white font-bold text-xl">SIGAU</span>
-                        </a>
+<nav class="bg-gis-gradient shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <div class="flex items-center">
+                <!-- Logo -->
+                <a href="{{ route('dashboard') }}" class="flex items-center space-x-2">
+                    <i class="fas fa-map-marker-alt text-white text-2xl"></i>
+                    <span class="text-white font-bold text-xl">SIGAU</span>
+                </a>
 
-                        <!-- Navigation Links -->
-                        <div class="hidden sm:ml-6 sm:flex sm:space-x-4">
-                            @auth
-                                <x-nav-link :href="route('dashboard')" class="text-white hover:bg-blue-700/20">
-                                    <i class="fas fa-tachometer-alt mr-2"></i>{{ __('Dashboard') }}
-                                </x-nav-link>
-                                @if(Auth::user()->role === 'admin')
-                                <x-nav-link :href="route('users.index')" class="text-white hover:bg-blue-700/20">
-                                    <i class="fas fa-users-cog mr-2"></i>{{ __('User Management') }}
-                                </x-nav-link>
-                                @endif
-                            @endauth
-                        </div>
-                    </div>
-
-                    <!-- Right Section -->
-                    <div class="flex items-center">
-                        @auth
-                        <x-dropdown align="right" width="48">
+                <!-- Navigation Links -->
+                <div class="hidden sm:ml-6 sm:flex sm:space-x-4">
+                    @auth
+                        <x-nav-link :href="route('dashboard')" class="text-white hover:bg-blue-700/20">
+                            <i class="fas fa-tachometer-alt mr-2"></i>{{ __('Dashboard') }}
+                        </x-nav-link>
+                        
+                        <!-- Admin Dropdown -->
+                        @if(Auth::user()->role === 'admin')
+                        <x-dropdown align="left" width="48">
                             <x-slot name="trigger">
-                                <div class="flex items-center text-white space-x-2 cursor-pointer hover:bg-blue-700/20 px-4 py-2 rounded-lg">
-                                    <span>{{ Auth::user()->name }}</span>
-                                    <i class="fas fa-chevron-down text-sm"></i>
-                                </div>
+                                <button class="text-white flex items-center space-x-1 px-4 py-2 hover:bg-blue-700/20 rounded-lg transition-colors">
+                                    <i class="fas fa-cog mr-1"></i>
+                                    <span>Admin</span>
+                                    <i class="fas fa-chevron-down text-xs mt-1"></i>
+                                </button>
                             </x-slot>
 
                             <x-slot name="content">
-                                <x-dropdown-link :href="route('profile.edit')" class="hover:bg-gray-100">
-                                    <i class="fas fa-user-edit mr-2 text-gray-600"></i>{{ __('Profile') }}
+                                <x-dropdown-link :href="route('users.index')" class="hover:bg-gray-100">
+                                    <i class="fas fa-users-cog mr-2 text-blue-500"></i>
+                                    {{ __('User') }}
                                 </x-dropdown-link>
-                                
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <x-dropdown-link :href="route('logout')" 
-                                                     class="hover:bg-gray-100"
-                                                     onclick="event.preventDefault(); this.closest('form').submit();">
-                                        <i class="fas fa-sign-out-alt mr-2 text-red-500"></i>{{ __('Log Out') }}
-                                    </x-dropdown-link>
-                                </form>
+                                <x-dropdown-link :href="route('searchs.index')" class="hover:bg-gray-100">
+                                    <i class="fas fa-search-location mr-2 text-green-500"></i>
+                                    {{ __('Searchs') }}
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="route('umkms.index')" class="hover:bg-gray-100">
+                                    <i class="fas fa-store mr-2 text-purple-500"></i>
+                                    {{ __('UMKM') }}
+                                </x-dropdown-link>
                             </x-slot>
                         </x-dropdown>
-                        @else
-                            <a href="{{ route('login') }}" class="text-white px-4 py-2 rounded-lg hover:bg-blue-700/20">
-                                {{ __('Login') }}
-                            </a>
-                            <a href="{{ route('register') }}" class="text-white px-4 py-2 rounded-lg hover:bg-blue-700/20 ml-2">
-                                {{ __('Register') }}
-                            </a>
-                        @endauth
-                    </div>
+                        @endif
+                    @endauth
                 </div>
             </div>
-        </nav>
+
+            <!-- Right Section -->
+            <div class="flex items-center">
+                @auth
+                <x-dropdown align="right" width="48">
+                    <x-slot name="trigger">
+                        <div class="flex items-center text-white space-x-2 cursor-pointer hover:bg-blue-700/20 px-4 py-2 rounded-lg">
+                            <span>{{ Auth::user()->name }}</span>
+                            <i class="fas fa-chevron-down text-sm"></i>
+                        </div>
+                    </x-slot>
+
+                    <x-slot name="content">
+                        <x-dropdown-link :href="route('profile.edit')" class="hover:bg-gray-100">
+                            <i class="fas fa-user-edit mr-2 text-gray-600"></i>{{ __('Profile') }}
+                        </x-dropdown-link>
+                        
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <x-dropdown-link :href="route('logout')" 
+                                            class="hover:bg-gray-100"
+                                            onclick="event.preventDefault(); this.closest('form').submit();">
+                                <i class="fas fa-sign-out-alt mr-2 text-red-500"></i>{{ __('Log Out') }}
+                            </x-dropdown-link>
+                        </form>
+                    </x-slot>
+                </x-dropdown>
+                @else
+                    <a href="{{ route('login') }}" class="text-white px-4 py-2 rounded-lg hover:bg-blue-700/20">
+                        {{ __('Login') }}
+                    </a>
+                    <a href="{{ route('register') }}" class="text-white px-4 py-2 rounded-lg hover:bg-blue-700/20 ml-2">
+                        {{ __('Register') }}
+                    </a>
+                @endauth
+            </div>
+        </div>
+    </div>
+</nav>
 
         <!-- Page Content -->
         <main class="flex-1">
