@@ -6,6 +6,8 @@ use App\Models\Category;
 use App\Models\Umkm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class UmkmController extends Controller
 {
@@ -46,47 +48,52 @@ class UmkmController extends Controller
      * Menyimpan UMKM baru ke database.
      */
     public function store(Request $request)
-    {
-        $request->validate([
-            'nama_usaha' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'alamat' => 'required|string',
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
-            'deskripsi' => 'required|string',
-            'jam_operasional' => 'required|string',
-            'kontak' => 'required|string',
-            'foto_usaha' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'status_verifikasi' => 'required|in:pending,terverifikasi,ditolak',
+{
+    Log::info('Store UMKM function hit.');
+    $request->validate([
+        'nama_usaha' => 'required|string|max:255',
+        'category_id' => 'required|exists:categories,id',
+        'alamat' => 'required|string',
+        'latitude' => 'nullable|numeric|between:-90,90',
+        'longitude' => 'nullable|numeric|between:-180,180',
+        'deskripsi' => 'required|string',
+        'jam_operasional' => 'required|string|max:255',
+        'kontak' => 'required|string|max:255',
+        'foto_usaha' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'status' => 'required|in:pending,terverifikasi,ditolak',
+    ]);
+
+    try {
+        // Upload foto usaha jika ada
+        $fotoUsahaPath = null;
+        if ($request->hasFile('foto_usaha')) {
+            $fotoUsahaPath = $request->file('foto_usaha')->store('umkm_images', 'public');
+        }
+
+        // Simpan data UMKM
+        $umkm = Umkm::create([
+            'nama_usaha' => $request->nama_usaha,
+            'category_id' => $request->category_id,
+            'alamat' => $request->alamat,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
+            'deskripsi' => $request->deskripsi,
+            'jam_operasional' => $request->jam_operasional,
+            'kontak' => $request->kontak,
+            'foto_usaha' => $fotoUsahaPath,
+            'status' => $request->status,
+            'user_id' => Auth::id(), // Ambil user login
+            // verified_by biarkan null dulu
         ]);
 
-        try {
-            // Upload foto usaha
-            $fotoUsahaPath = $request->file('foto_usaha')->store('umkm_images', 'public');
-
-            // Simpan data UMKM
-            $umkm = new Umkm([
-                'nama_usaha' => $request->nama_usaha,
-                'category_id' => $request->category_id,
-                'alamat' => $request->alamat,
-                'latitude' => $request->latitude,
-                'longitude' => $request->longitude,
-                'deskripsi' => $request->deskripsi,
-                'jam_operasional' => $request->jam_operasional,
-                'kontak' => $request->kontak,
-                'foto_usaha' => $fotoUsahaPath,
-                'status_verifikasi' => $request->status_verifikasi,
-                'user_id' => Auth()::id(), // Jika menggunakan auth, ambil ID user yang login
-            ]);
-
-            $umkm->save();
-
-            return redirect()->route('umkms.index')
-                ->with('success', 'UMKM ' . $umkm->nama_usaha . ' berhasil ditambahkan!');
-        } catch (\Throwable $th) {
-            return back()->with('error', 'Gagal menambahkan UMKM: ' . $th->getMessage());
-        }
+        return redirect()->route('umkms.index')
+            ->with('success', 'UMKM "' . $umkm->nama_usaha . '" berhasil ditambahkan!');
+    } catch (\Throwable $th) {
+        return back()->with('error', 'Gagal menambahkan UMKM: ' . $th->getMessage());
     }
+}
+
+
 
     /**
      * Menampilkan detail UMKM.

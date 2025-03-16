@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('nama_usaha');
             $table->foreignId('category_id')->constrained('categories');
             $table->text('alamat');
-            $table->decimal('latitude', 10, 8);
-            $table->decimal('longitude', 11, 8);
+            $table->decimal('latitude', 10, 8)->nullable();
+            $table->decimal('longitude', 11, 8)->nullable();
             $table->text('deskripsi');
             $table->string('status')->default('pending');
             $table->string('jam_operasional');

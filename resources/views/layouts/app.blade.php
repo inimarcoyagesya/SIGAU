@@ -13,7 +13,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>    
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>   
+     
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -73,6 +74,14 @@
                                 <x-dropdown-link :href="route('umkms.index')" class="hover:bg-gray-100">
                                     <i class="fas fa-store mr-2 text-purple-500"></i>
                                     {{ __('UMKM') }}
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="route('inventories.index')" class="hover:bg-gray-100">
+                                    <i class="fas fa-box mr-2 text-purple-500"></i>
+                                    {{ __('Inventory') }}
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="route('categories.index')" class="hover:bg-gray-100">
+                                    <i class="fas fa-list mr-2 text-orange-500"></i>
+                                    {{ __('Categories') }}
                                 </x-dropdown-link>
                             </x-slot>
                         </x-dropdown>
@@ -168,6 +177,8 @@
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>   
+    <script src="//unpkg.com/alpinejs" defer></script>
+ 
 </body>
 </html>

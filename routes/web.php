@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ProfileController;
@@ -22,7 +23,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('/searchs', SearchController::class);
     Route::resource('/umkms', UmkmController::class);
     Route::resource('/inventories', InventoryController::class);
-
+    Route::resource('/categories', CategoryController::class);
 });
 
 require __DIR__.'/auth.php';

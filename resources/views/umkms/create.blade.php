@@ -9,7 +9,17 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <form method="POST" action="{{ route('umkm.store') }}" enctype="multipart/form-data">
+                @if ($errors->any())
+                <div class="bg-red-100 text-red-700 p-4 rounded">
+                     <ul>
+                         @foreach ($errors->all() as $error)
+                         <li>{{ $error }}</li>
+                         @endforeach
+                        </ul>
+                     </div>
+                     @endif
+
+                    <form method="POST" action="{{ route('umkms.store') }}" enctype="multipart/form-data">
                         @csrf
 
                         <!-- Nama Usaha -->
@@ -39,7 +49,7 @@
                                 <option value="">Pilih Kategori</option>
                                 @foreach($categories as $category)
                                     <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                                        {{ $category->nama_kategori }}
+                                        {{ $category->name }}
                                     </option>
                                 @endforeach
                             </select>
@@ -68,7 +78,7 @@
                                     type="text" 
                                     class="mt-1 block w-full" 
                                     :value="old('latitude')" 
-                                    required 
+                                     
                                 />
                                 <x-input-error class="mt-2" :messages="$errors->get('latitude')" />
                             </div>
@@ -80,7 +90,7 @@
                                     type="text" 
                                     class="mt-1 block w-full" 
                                     :value="old('longitude')" 
-                                    required 
+                                     
                                 />
                                 <x-input-error class="mt-2" :messages="$errors->get('longitude')" />
                             </div>
@@ -135,29 +145,28 @@
                                 type="file" 
                                 class="mt-1 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
                                 accept="image/*"
-                                required
                             />
                             <x-input-error class="mt-2" :messages="$errors->get('foto_usaha')" />
                         </div>
 
-                        <!-- Status Verifikasi -->
+                        <!-- Status -->
                         <div class="mb-6">
-                            <x-input-label for="status_verifikasi" :value="__('Status Verifikasi')" />
+                            <x-input-label for="status" :value="__('Status Verifikasi')" />
                             <select 
-                                id="status_verifikasi" 
-                                name="status_verifikasi" 
+                                id="status" 
+                                name="status" 
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
                                 required
                             >
-                                <option value="pending" {{ old('status_verifikasi') == 'pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="terverifikasi" {{ old('status_verifikasi') == 'terverifikasi' ? 'selected' : '' }}>Terverifikasi</option>
-                                <option value="ditolak" {{ old('status_verifikasi') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
+                                <option value="pending" {{ old('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="terverifikasi" {{ old('status') == 'terverifikasi' ? 'selected' : '' }}>Terverifikasi</option>
+                                <option value="ditolak" {{ old('status') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
                             </select>
                             <x-input-error class="mt-2" :messages="$errors->get('status_verifikasi')" />
                         </div>
 
                         <div class="flex items-center justify-end gap-4">
-                            <x-danger-link-button :href="route('umkm.index')">
+                            <x-danger-link-button :href="route('umkms.index')">
                                 {{ __('Batal') }}
                             </x-danger-link-button>
                             

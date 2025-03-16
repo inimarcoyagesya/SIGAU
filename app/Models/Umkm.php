@@ -7,9 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 class Umkm extends Model
 {
     protected $fillable = [
-        'user_id', 'nama_usaha', 'category_id', 'alamat', 
-        'latitude', 'longitude', 'deskripsi', 'jam_operasional', 
-        'kontak', 'foto_usaha', 'verified_by'
+        'user_id',
+        'nama_usaha',
+        'category_id',
+        'alamat',
+        'latitude',
+        'longitude',
+        'deskripsi',
+        'status',
+        'jam_operasional',
+        'kontak',
+        'foto_usaha',
+        'verified_by',
     ];
 
     public function user() {
