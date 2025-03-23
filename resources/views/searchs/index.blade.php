@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('search Management') }}
+            {{ __('Search Management') }}
         </h2>
     </x-slot>
 
@@ -22,7 +22,7 @@
                                 type="text" 
                                 id="searchInput"
                                 class="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-300"
-                                placeholder="search searchs..."
+                                placeholder="Search keyword, category, radius..."
                                 onkeyup="searchTable()"
                             >
                         </div>
@@ -51,16 +51,13 @@
                                         </div>
                                     </th>
                                     <th scope="col" class="px-6 py-3 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600" onclick="sortTable(1)">
-                                        Name
+                                        Keyword
                                     </th>
                                     <th scope="col" class="px-6 py-3 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600" onclick="sortTable(2)">
-                                        Email
+                                        Category
                                     </th>
                                     <th scope="col" class="px-6 py-3 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600" onclick="sortTable(3)">
-                                        Role
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600" onclick="sortTable(4)">
-                                        Status
+                                        Radius (m)
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-center">Action</th>
                                 </tr>
@@ -69,26 +66,11 @@
                                 @forelse($searchs as $search)
                                 <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200 transform hover:scale-[1.002]">
                                     <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        {{ +$i }}
+                                        {{ $loop->iteration }}
                                     </td>
                                     <td class="px-6 py-4">{{ $search->keyword }}</td>
-                                    <td class="px-6 py-4">{{ $search->email }}</td>
-                                    <td class="px-6 py-4">
-                                        <span class="px-3 py-1 rounded-full text-sm 
-                                            {{ $search->role == 'admin' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300' : 
-                                            ($search->role == 'umkm' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' : 
-                                            'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300') }}">
-                                            {{ $search->role }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="px-3 py-1 rounded-full text-sm 
-                                            {{ $search->status == 'verified' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 
-                                            ($search->status == 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' : 
-                                            'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300') }}">
-                                            {{ $search->status }}
-                                        </span>
-                                    </td>
+                                    <td class="px-6 py-4">{{ $search->kategori_filter }}</td>
+                                    <td class="px-6 py-4">{{ $search->radius }}</td>
                                     <td class="px-6 py-4 flex items-center justify-center gap-2">
                                         <a href="{{ route('searchs.edit', $search->id) }}" class="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-all duration-300" title="Edit">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -108,12 +90,12 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="6" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                                    <td colspan="5" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                                         <div class="flex flex-col items-center justify-center py-8">
-                                            <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                             </svg>
-                                            <span class="text-lg">No searchs found</span>
+                                            <span class="text-lg">No searchs found.</span>
                                         </div>
                                     </td>
                                 </tr>
@@ -122,96 +104,47 @@
                         </table>
                     </div>
 
-                    <!-- Pagination -->
-                    <div class="mt-6 px-4">
-                        {{ $searchs->links() }}
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Fungsi Pencarian
+        // Search function
         function searchTable() {
-            const input = document.getElementById('searchInput');
-            const filter = input.value.toUpperCase();
-            const table = document.getElementById('searchTable');
-            const tr = table.getElementsByTagName('tr');
+            const input = document.getElementById("searchInput");
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById("searchTable");
+            const trs = table.getElementsByTagName("tr");
 
-            for (let i = 1; i < tr.length; i++) {
-                const td = tr[i].getElementsByTagName('td');
-                let found = false;
-                
-                for (let j = 0; j < td.length - 1; j++) { // Exclude action column
-                    if (td[j]) {
-                        const txtValue = td[j].textContent || td[j].innerText;
-                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                            found = true;
-                            break;
-                        }
+            for (let i = 1; i < trs.length; i++) {
+                let tds = trs[i].getElementsByTagName("td");
+                let match = false;
+                for (let j = 1; j < 4; j++) {
+                    if (tds[j] && tds[j].textContent.toLowerCase().indexOf(filter) > -1) {
+                        match = true;
+                        break;
                     }
                 }
-                
-                tr[i].style.display = found ? '' : 'none';
+                trs[i].style.display = match ? "" : "none";
             }
         }
 
-        // Fungsi Sorting
+        // Sort function
         let sortDirection = true;
         function sortTable(column) {
-            const table = document.getElementById('searchTable');
-            const tbody = table.querySelector('tbody');
-            const rows = Array.from(tbody.querySelectorAll('tr'));
-            
-            sortDirection = !sortDirection;
+            const table = document.getElementById("searchTable");
+            const rows = Array.from(table.rows).slice(1);
+            const dir = sortDirection ? 1 : -1;
 
             rows.sort((a, b) => {
-                const aValue = a.getElementsByTagName('td')[column].textContent;
-                const bValue = b.getElementsByTagName('td')[column].textContent;
-                
-                if (column === 0) { // Numeric sorting for ID
-                    return sortDirection ? aValue - bValue : bValue - aValue;
-                } else { // String sorting
-                    return sortDirection ? 
-                        aValue.localeCompare(bValue) : 
-                        bValue.localeCompare(aValue);
-                }
+                let A = a.cells[column].innerText.toLowerCase();
+                let B = b.cells[column].innerText.toLowerCase();
+                return A.localeCompare(B) * dir;
             });
 
-            while (tbody.firstChild) tbody.removeChild(tbody.firstChild);
-            rows.forEach(row => tbody.appendChild(row));
+            rows.forEach(row => table.tBodies[0].appendChild(row));
+            sortDirection = !sortDirection;
         }
     </script>
-
-    <style>
-        /* Animasi dan Transisi */
-        .transition-all {
-            transition-property: all;
-            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-            transition-duration: 150ms;
-        }
-
-        .sort-icons {
-            opacity: 0.5;
-            transition: opacity 0.3s ease;
-        }
-
-        th:hover .sort-icons {
-            opacity: 1;
-        }
-
-        .hover\:scale-105:hover {
-            transform: scale(1.05);
-        }
-
-        .hover\:scale-\[1\.002\]:hover {
-            transform: scale(1.002);
-        }
-
-        /* Warna Tema GIS */
-        .bg-gradient-to-r {
-            background-image: linear-gradient(to right, #3B82F6, #10B981);
-        }
-    </style>
 </x-app-layout>

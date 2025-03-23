@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('keyword');
             $table->string('kategori_filter')->nullable();
             $table->integer('radius')->nullable();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

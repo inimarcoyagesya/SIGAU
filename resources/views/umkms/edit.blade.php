@@ -9,7 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <form method="POST" action="{{ route('umkm.update', $umkm->id) }}" enctype="multipart/form-data">
+                    <form method="POST" action="{{ route('umkms.update', $umkm->id) }}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -162,7 +162,7 @@
                         </div>
 
                         <div class="flex items-center justify-end gap-4">
-                            <x-danger-link-button :href="route('umkm.index')">
+                            <x-danger-link-button :href="route('umkms.index')">
                                 {{ __('Batal') }}
                             </x-danger-link-button>
                             
