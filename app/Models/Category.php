@@ -12,4 +12,8 @@ class Category extends Model
     {
         return $this->hasMany(Umkm::class);
     }
+    public function facilities()
+    {
+        return $this->hasMany(Facility::class);
+    }
 }
