@@ -25,7 +25,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('/umkms', UmkmController::class);
     Route::resource('/inventories', InventoryController::class);
     Route::resource('/categories', CategoryController::class);
-    Route::resource('facilities', FacilityController::class);
+    Route::resource('/facilities', FacilityController::class);
 });
 
 require __DIR__.'/auth.php';

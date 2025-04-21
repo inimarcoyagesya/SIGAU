@@ -29,6 +29,13 @@
         .hover-scale:hover {
             transform: translateY(-2px);
         }
+        .icon-gradient {
+            background: linear-gradient(135deg, #3B82F6 0%, #10B981 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+        }
     </style>
 </head>
 <body class="font-sans antialiased bg-gray-50 dark:bg-gray-900">
@@ -64,24 +71,28 @@
 
                             <x-slot name="content">
                                 <x-dropdown-link :href="route('users.index')" class="hover:bg-gray-100">
-                                    <i class="fas fa-users-cog mr-2 text-blue-500"></i>
+                                    <i class="fas fa-users-cog mr-2 icon-gradient"></i>
                                     {{ __('User') }}
                                 </x-dropdown-link>
                                 <x-dropdown-link :href="route('searchs.index')" class="hover:bg-gray-100">
-                                    <i class="fas fa-search-location mr-2 text-green-500"></i>
+                                    <i class="fas fa-search-location mr-2 icon-gradient"></i>
                                     {{ __('Searchs') }}
                                 </x-dropdown-link>
                                 <x-dropdown-link :href="route('umkms.index')" class="hover:bg-gray-100">
-                                    <i class="fas fa-store mr-2 text-purple-500"></i>
+                                    <i class="fas fa-store mr-2 icon-gradient"></i>
                                     {{ __('UMKM') }}
                                 </x-dropdown-link>
                                 <x-dropdown-link :href="route('inventories.index')" class="hover:bg-gray-100">
-                                    <i class="fas fa-box mr-2 text-purple-500"></i>
+                                    <i class="fas fa-box mr-2 icon-gradient"></i>
                                     {{ __('Inventory') }}
                                 </x-dropdown-link>
                                 <x-dropdown-link :href="route('categories.index')" class="hover:bg-gray-100">
-                                    <i class="fas fa-list mr-2 text-orange-500"></i>
+                                    <i class="fas fa-list mr-2 icon-gradient"></i>
                                     {{ __('Categories') }}
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="route('facilities.index')" class="hover:bg-gray-100">
+                                    <i class="fas fa-tools mr-2 icon-gradient"></i>
+                                    {{ __('Facility') }}
                                 </x-dropdown-link>
                             </x-slot>
                         </x-dropdown>
