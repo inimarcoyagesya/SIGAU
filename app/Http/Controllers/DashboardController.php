@@ -12,7 +12,7 @@ class DashboardController extends Controller
     {
         return view('dashboard', [
             'totalUmkm' => Umkm::count(),
-            'verifiedUmkm' => Umkm::where('status', 'verified')->count(),
+            'verifiedUmkm' => Umkm::where('status', 'terverifikasi')->count(),
             'totalCategories' => Category::count(),
             'newRegistrations' => Umkm::whereDate('created_at', today())->count(),
             'umkmLocations' => Umkm::with('category')

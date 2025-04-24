@@ -102,7 +102,7 @@
 
                     <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg hover-scale transition">
                         <div class="text-green-600 dark:text-green-400 text-4xl mb-4">
-                            <i class="fas fa-chart-network"></i>
+                            <i class="fas fa-chart-line"></i>
                         </div>
                         <h3 class="text-xl font-bold mb-4">Analisis Bisnis</h3>
                         <p class="text-gray-600 dark:text-gray-300">

@@ -63,7 +63,7 @@
                                             {{ $inventory->umkm->nama_usaha ?? 'N/A' }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4">Rp {{ number_format($inventory->harga, 0, ',', '.') }}</td>
+                                    <td class="px-6 py-4">Rp {{ number_format($inventory->harga, 2, ',', '.') }}</td>
                                     <td class="px-6 py-4">
                                         <span class="px-3 py-1 rounded-full text-sm {{ $inventory->stok < 10 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' }} dark:bg-gray-700">
                                             {{ $inventory->stok }}

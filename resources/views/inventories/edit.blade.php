@@ -37,7 +37,7 @@
                         <!-- Harga -->
                         <div class="mb-6">
                             <x-input-label for="harga" :value="__('Harga')" />
-                            <x-text-input id="harga" name="harga" type="number" class="mt-1 block w-full" :value="old('harga', $inventory->harga)" required />
+                            <x-text-input id="harga" name="harga" type="number" class="mt-1 block w-full" oninput="formatRupiah(this)" :value="old('harga', $inventory->harga)" required />
                             <x-input-error class="mt-2" :messages="$errors->get('harga')" />
                         </div>
 
@@ -76,4 +76,13 @@
             </div>
         </div>
     </div>
+    <script>
+        function formatRupiah(el) {
+            let value = el.value.replace(/\D/g, "");
+            el.value = new Intl.NumberFormat("id-ID").format(value);
+
+            let hiddenInputId = el.dataset.target;
+            document.getElementById(hiddenInputId).value = value;
+        }
+    </script>
 </x-app-layout>
