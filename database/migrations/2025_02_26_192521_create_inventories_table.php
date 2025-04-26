@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('umkm_id')->constrained()->onDelete('cascade');
             $table->string('nama_produk');
-            $table->decimal('harga', 12, 2);
+            $table->decimal('harga', 15, 2);
             $table->integer('stok');
             $table->string('supplier')->nullable();
             $table->date('expired_date')->nullable();

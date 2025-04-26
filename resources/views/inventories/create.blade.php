@@ -54,8 +54,8 @@
                                 name="harga" 
                                 type="text" 
                                 class="mt-1 block w-full"
+                                :value="old('harga', isset($inventory) ? 'Rp ' . number_format($inventory->harga, 0, ',', '.') : '')"
                                 oninput="formatRupiah(this)"
-                                :value="old('harga')" 
                                 required 
                             />
                             <x-input-error class="mt-2" :messages="$errors->get('harga')" />
@@ -118,12 +118,14 @@
         </div>
     </div>
     <script>
-        function formatRupiah(el) {
-            let value = el.value.replace(/\D/g, "");
-            el.value = new Intl.NumberFormat("id-ID").format(value);
-
-            let hiddenInputId = el.dataset.target;
-            document.getElementById(hiddenInputId).value = value;
+    function formatRupiah(input) {
+        let value = input.value.replace(/\D/g, '');
+        if(value.length > 0) {
+            value = parseInt(value, 10).toLocaleString('id-ID');
+            input.value = 'Rp ' + value;
+        } else {
+            input.value = '';
         }
-    </script>
+    }
+</script>
 </x-app-layout>

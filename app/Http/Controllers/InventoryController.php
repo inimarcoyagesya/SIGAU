@@ -45,6 +45,10 @@ class InventoryController extends Controller
      */
     public function store(Request $request)
     {
+        $request->merge([
+            'harga' => (float) str_replace(['Rp', '.', ' '], '', $request->harga)
+        ]);
+
         $request->validate([
             'umkm_id' => 'required|exists:umkms,id',
             'nama_produk' => 'required|string|max:255',
@@ -88,6 +92,10 @@ class InventoryController extends Controller
      */
     public function update(Request $request, Inventory $inventory)
     {
+        $request->merge([
+            'harga' => (float) str_replace(['Rp', '.', ' '], '', $request->harga)
+        ]);
+        
         $request->validate([
             'umkm_id' => 'required|exists:umkms,id',
             'nama_produk' => 'required|string|max:255',

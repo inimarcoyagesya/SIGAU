@@ -11,6 +11,12 @@ class Inventory extends Model
         'stok', 'supplier', 'expired_date'
     ];
 
+    public function getFormattedHargaAttribute()
+    {
+        return 'Rp ' . number_format($this->harga, 0, ',', '.');
+    }
+
+
     public function umkm() {
         return $this->belongsTo(Umkm::class, 'umkm_id');
     }
