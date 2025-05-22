@@ -16,4 +16,9 @@ class Category extends Model
     {
         return $this->hasMany(Facility::class);
     }
+
+    public function rentalItems()
+    {
+        return $this->hasMany(RentalItem::class);
+    }
 }

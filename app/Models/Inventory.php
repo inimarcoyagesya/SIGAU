@@ -20,4 +20,9 @@ class Inventory extends Model
     public function umkm() {
         return $this->belongsTo(Umkm::class, 'umkm_id');
     }
+
+    public function transactionDetails()
+    {
+        return $this->hasMany(TransactionDetail::class);
+    }
 }

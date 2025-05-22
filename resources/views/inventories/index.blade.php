@@ -11,29 +11,56 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <!-- Header dengan Fitur Pencarian -->
                     <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
-                        <!-- Search Box -->
-                        <div class="w-full md:w-96 relative">
-                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-                                </svg>
+                        <div class="flex items-center gap-4">
+                            <!-- Search Box -->
+                            <div class="w-full md:w-96 relative">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                                    </svg>
+                                </div>
+                                <input 
+                                    type="text" 
+                                    id="searchInput"
+                                    class="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-300"
+                                    placeholder="Cari Produk..."
+                                    onkeyup="searchTable()"
+                                >
                             </div>
-                            <input 
-                                type="text" 
-                                id="searchInput"
-                                class="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-300"
-                                placeholder="Cari Produk..."
-                                onkeyup="searchTable()"
-                            >
+
+                            <!-- Form Cetak Selected -->
+                            <form id="pdfForm" method="POST" action="{{ route('inventories.selected-pdf') }}">
+                                @csrf
+                                <button type="submit" 
+                                    class="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                    </svg>
+                                    Cetak Selected
+                                </button>
+                            </form>
                         </div>
 
-                        <!-- Tambah Inventory Button -->
-                        <a href="{{ route('inventories.create') }}" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white rounded-lg transition-all duration-300 transform hover:scale-105">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                            </svg>
-                            <span>Tambah Baru</span>
-                        </a>
+                        <div class="flex items-center gap-4">
+                            <!-- Tambah Inventory Button -->
+                            <a href="{{ route('inventories.create') }}" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white rounded-lg transition-all duration-300 transform hover:scale-105">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                </svg>
+                                <span>Tambah Baru</span>
+                            </a>
+                            
+                            <!-- Preview PDF Button -->
+                            <a href="{{ route('inventories.preview') }}" 
+                            class="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all duration-300 transform hover:scale-105"
+                            target="_blank">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                                <span>Preview PDF</span>
+                            </a>
+                        </div>
                     </div>
 
                     <!-- Tabel Inventory -->
@@ -41,19 +68,27 @@
                         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400" id="inventoryTable">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                 <tr class="hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200">
-                                    <th scope="col" class="px-6 py-3 cursor-pointer" onclick="sortTable(0)">NO</th>
-                                    <th scope="col" class="px-6 py-3 cursor-pointer" onclick="sortTable(1)">Nama Produk</th>
-                                    <th scope="col" class="px-6 py-3 cursor-pointer" onclick="sortTable(2)">UMKM</th>
-                                    <th scope="col" class="px-6 py-3 cursor-pointer" onclick="sortTable(3)">Harga</th>
-                                    <th scope="col" class="px-6 py-3 cursor-pointer" onclick="sortTable(4)">Stok</th>
-                                    <th scope="col" class="px-6 py-3 cursor-pointer" onclick="sortTable(5)">Supplier</th>
-                                    <th scope="col" class="px-6 py-3 cursor-pointer" onclick="sortTable(6)">Expired Date</th>
+                                    <th class="px-6 py-3">
+                                        <input type="checkbox" id="selectAll">
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 cursor-pointer" onclick="sortTable(1)">NO</th>
+                                    <th scope="col" class="px-6 py-3 cursor-pointer" onclick="sortTable(2)">Nama Produk</th>
+                                    <th scope="col" class="px-6 py-3 cursor-pointer" onclick="sortTable(3)">UMKM</th>
+                                    <th scope="col" class="px-6 py-3 cursor-pointer" onclick="sortTable(4)">Harga</th>
+                                    <th scope="col" class="px-6 py-3 cursor-pointer" onclick="sortTable(5)">Stok</th>
+                                    <th scope="col" class="px-6 py-3 cursor-pointer" onclick="sortTable(6)">Supplier</th>
+                                    <th scope="col" class="px-6 py-3 cursor-pointer" onclick="sortTable(7)">Expired Date</th>
                                     <th scope="col" class="px-6 py-3 text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($inventories as $inventory)
                                 <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200 transform hover:scale-[1.002]">
+                                    <td class="px-6 py-4">
+                                        <input type="checkbox" name="selected_ids[]" 
+                                            value="{{ $inventory->id }}" 
+                                            class="item-checkbox">
+                                    </td>
                                     <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                     {{ $loop->iteration }}
                                     </td>
@@ -92,7 +127,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="8" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                                    <td colspan="9" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                                         <div class="flex flex-col items-center justify-center py-8">
                                             <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -116,6 +151,23 @@
     </div>
 
     <script>
+        // Seleksi semua checkbox
+        document.getElementById('selectAll').addEventListener('click', function(e) {
+            const checkboxes = document.querySelectorAll('.item-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = e.target.checked;
+            });
+        });
+
+        // Validasi form cetak
+        document.getElementById('pdfForm').addEventListener('submit', function(e) {
+            const checked = document.querySelectorAll('.item-checkbox:checked');
+            if(checked.length === 0) {
+                e.preventDefault();
+                alert('Pilih minimal 1 item untuk dicetak!');
+            }
+        });
+
         // Fungsi Pencarian
         function searchTable() {
             const input = document.getElementById('searchInput');
@@ -127,7 +179,7 @@
                 const td = tr[i].getElementsByTagName('td');
                 let found = false;
                 
-                for (let j = 1; j < td.length - 1; j++) {
+                for (let j = 2; j < td.length - 1; j++) { // Skip checkbox dan aksi
                     if (td[j]) {
                         const txtValue = td[j].textContent || td[j].innerText;
                         if (txtValue.toUpperCase().indexOf(filter) > -1) {
@@ -141,7 +193,7 @@
             }
         }
 
-        // Fungsi Sorting
+        // Fungsi Sorting (diupdate untuk kolom baru)
         let sortDirection = true;
         function sortTable(column) {
             const table = document.getElementById('inventoryTable');
@@ -150,15 +202,18 @@
             
             sortDirection = !sortDirection;
 
+            // Adjust column index for new checkbox column
+            const adjustedColumn = column >= 1 ? column - 1 : column;
+
             rows.sort((a, b) => {
-                const aValue = a.getElementsByTagName('td')[column].textContent;
-                const bValue = b.getElementsByTagName('td')[column].textContent;
+                const aValue = a.getElementsByTagName('td')[adjustedColumn].textContent;
+                const bValue = b.getElementsByTagName('td')[adjustedColumn].textContent;
                 
-                if (column === 0 || column === 3 || column === 4) { // Numeric columns
+                if (adjustedColumn === 1 || adjustedColumn === 4 || adjustedColumn === 5) { // Numeric columns
                     const numA = parseFloat(aValue.replace(/[^\d]/g, ''));
                     const numB = parseFloat(bValue.replace(/[^\d]/g, ''));
                     return sortDirection ? numA - numB : numB - numA;
-                } else if (column === 6) { // Date sorting
+                } else if (adjustedColumn === 7) { // Date sorting
                     const dateA = new Date(aValue.split('/').reverse().join('-'));
                     const dateB = new Date(bValue.split('/').reverse().join('-'));
                     return sortDirection ? dateA - dateB : dateB - dateA;

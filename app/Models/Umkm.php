@@ -21,11 +21,13 @@ class Umkm extends Model
         'verified_by',
     ];
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
-    
-    public function promotions() {
+
+    public function promotions()
+    {
         return $this->hasMany(Promotion::class);
     }
 
@@ -34,4 +36,18 @@ class Umkm extends Model
         return $this->belongsTo(Category::class, 'category_id');
     }
 
+    public function rentalItems()
+    {
+        return $this->hasMany(RentalItem::class);
+    }
+
+    public function rentalTransactions()
+    {
+        return $this->hasMany(RentalTransaction::class);
+    }
+    public function inventories()
+    {
+        // asumsinya foreign key di tabel inventories: umkm_id
+        return $this->hasMany(Inventory::class, 'umkm_id');
+    }
 }

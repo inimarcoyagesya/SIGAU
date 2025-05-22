@@ -7,36 +7,29 @@ use App\Models\Umkm;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
-class InventoryController extends Controller
+class Inventory2Controller extends Controller
 {
     /**
      * Menampilkan daftar inventaris
      */
-    public function index(Request $request)
+    public function index()
     {
-        $search = $request->input('search');
+        // Ambil UMKM yang punya inventory (distinct)
+        $umkms = Umkm::whereHas('inventories')->pluck('nama_usaha', 'id');
 
-        $inventories = Inventory::with('umkm')
-            ->when($search, function ($query, $search) {
-                return $query->where('nama_produk', 'like', "%{$search}%")
-                    ->orWhere('supplier', 'like', "%{$search}%")
-                    ->orWhereHas('umkm', function ($q) use ($search) {
-                        $q->where('nama_usaha', 'like', "%{$search}%");
-                    });
-            })
-            ->paginate(10);
-
-        $i = ($inventories->currentPage() - 1) * $inventories->perPage() + 1;
-
-        return view('inventories.index', compact('inventories', 'i'));
+        // View awal tanpa data
+        return view('inventories2.index', [
+            'umkms' => $umkms,
+        ]);
     }
+
 
     /**
      * Menampilkan form untuk membuat inventaris baru
      */
     public function create()
     {
-        return view('inventories.create', [
+        return view('inventories2.create', [
             'umkms' => Umkm::all()
         ]);
     }
@@ -72,17 +65,17 @@ class InventoryController extends Controller
     /**
      * Menampilkan detail inventaris
      */
-    public function show(Inventory $inventory)
-    {
-        return view('inventories.show', compact('inventory'));
-    }
+    // public function show(Inventory $inventory)
+    // {
+    //     return view('inventories2.show', compact('inventory'));
+    // }
 
     /**
      * Menampilkan form untuk mengedit inventaris
      */
     public function edit(Inventory $inventory)
     {
-        return view('inventories.edit', [
+        return view('inventories2.edit', [
             'inventory' => $inventory,
             'umkms' => Umkm::all()
         ]);
@@ -96,7 +89,7 @@ class InventoryController extends Controller
         $request->merge([
             'harga' => (float) str_replace(['Rp', '.', ' '], '', $request->harga)
         ]);
-        
+
         $request->validate([
             'umkm_id' => 'required|exists:umkms,id',
             'nama_produk' => 'required|string|max:255',
@@ -109,7 +102,7 @@ class InventoryController extends Controller
         try {
             $inventory->update($request->all());
 
-            return redirect()->route('inventories.index')
+            return redirect()->route('inventories2.index')
                 ->with('success', 'Produk ' . $inventory->nama_produk . ' berhasil diperbarui!');
         } catch (\Throwable $th) {
             return back()->with('error', 'Gagal memperbarui produk: ' . $th->getMessage());
@@ -124,10 +117,44 @@ class InventoryController extends Controller
         try {
             $inventory->delete();
 
-            return redirect()->route('inventories.index')
+            return redirect()->route('inventories2.index')
                 ->with('success', 'Produk ' . $inventory->nama_produk . ' berhasil dihapus!');
         } catch (\Throwable $th) {
             return back()->with('error', 'Gagal menghapus produk: ' . $th->getMessage());
         }
+    }
+    public function filter(Request $request)
+    {
+        \Log::info('Filter inventories2 called', $request->all());
+
+        $query = Inventory::with('umkm');
+
+        if ($request->start) {
+            $query->whereDate('expired_date', '>=', $request->start);
+        }
+        if ($request->end) {
+            $query->whereDate('expired_date', '<=', $request->end);
+        }
+        if ($request->umkm) {
+            $query->where('umkm_id', $request->umkm);
+        }
+
+        $items = $query->get()->map(function ($inv) {
+            return [
+                'id'        => $inv->id,
+                'nama_produk' => $inv->nama_produk,
+                'umkm'      => ['nama_usaha' => $inv->umkm->nama_usaha],
+                'harga'     => $inv->harga,
+                'stok'      => $inv->stok,
+                'supplier'  => $inv->supplier,
+                'expired_date_formatted' => $inv->expired_date
+                    ? $inv->expired_date->format('d/m/Y')
+                    : null,
+            ];
+        });
+
+        \Log::info('Filter result count: ' . $items->count());
+
+        return response()->json($items);
     }
 }

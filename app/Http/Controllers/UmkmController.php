@@ -17,7 +17,7 @@ class UmkmController extends Controller
     public function create()
     {
         return view('umkms.create', [
-            'categories' => Category::all() // Mengirim data kategori ke view
+            'categories' => Category::all()
         ]);
     }
 
@@ -30,12 +30,12 @@ class UmkmController extends Controller
 
         $umkms = Umkm::when($search, function ($query, $search) {
             return $query->where('nama_usaha', 'like', "%{$search}%")
-                         ->orWhere('alamat', 'like', "%{$search}%")
-                         ->orWhere('deskripsi', 'like', "%{$search}%")
-                         ->orWhere('kontak', 'like', "%{$search}%")
-                         ->orWhereHas('category', function ($q) use ($search) {
-                             $q->where('nama_kategori', 'like', "%{$search}%");
-                         });
+                ->orWhere('alamat', 'like', "%{$search}%")
+                ->orWhere('deskripsi', 'like', "%{$search}%")
+                ->orWhere('kontak', 'like', "%{$search}%")
+                ->orWhereHas('category', function ($q) use ($search) {
+                    $q->where('nama_kategori', 'like', "%{$search}%");
+                });
         })->paginate(10);
 
         // Hitung nomor urut
@@ -48,50 +48,55 @@ class UmkmController extends Controller
      * Menyimpan UMKM baru ke database.
      */
     public function store(Request $request)
-{
-    Log::info('Store UMKM function hit.');
-    $request->validate([
-        'nama_usaha' => 'required|string|max:255',
-        'category_id' => 'required|exists:categories,id',
-        'alamat' => 'required|string',
-        'latitude' => 'nullable|numeric|between:-90,90',
-        'longitude' => 'nullable|numeric|between:-180,180',
-        'deskripsi' => 'required|string',
-        'jam_operasional' => 'required|string|max:255',
-        'kontak' => 'required|string|max:255',
-        'foto_usaha' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        'status' => 'required|in:pending,terverifikasi,ditolak',
-    ]);
-
-    try {
-        // Upload foto usaha jika ada
-        $fotoUsahaPath = null;
-        if ($request->hasFile('foto_usaha')) {
-            $fotoUsahaPath = $request->file('foto_usaha')->store('umkm_images', 'public');
-        }
-
-        // Simpan data UMKM
-        $umkm = Umkm::create([
-            'nama_usaha' => $request->nama_usaha,
-            'category_id' => $request->category_id,
-            'alamat' => $request->alamat,
-            'latitude' => $request->latitude,
-            'longitude' => $request->longitude,
-            'deskripsi' => $request->deskripsi,
-            'jam_operasional' => $request->jam_operasional,
-            'kontak' => $request->kontak,
-            'foto_usaha' => $fotoUsahaPath,
-            'status' => $request->status,
-            'user_id' => Auth::id(), // Ambil user login
-            // verified_by biarkan null dulu
+    {
+        $request->validate([
+            'nama_usaha' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'alamat' => 'required|string',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
+            'deskripsi' => 'required|string',
+            'jam_operasional' => 'required|string|max:255',
+            'kontak' => 'required|string|max:255',
+            'foto_usaha' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'status' => 'required|in:pending,terverifikasi,ditolak',
         ]);
 
-        return redirect()->route('umkms.index')
-            ->with('success', 'UMKM "' . $umkm->nama_usaha . '" berhasil ditambahkan!');
-    } catch (\Throwable $th) {
-        return back()->with('error', 'Gagal menambahkan UMKM: ' . $th->getMessage());
+        try {
+            // Upload foto usaha jika ada
+            $fotoUsahaPath = null;
+            if ($request->hasFile('foto_usaha')) {
+                $fotoUsahaPath = $request->file('foto_usaha')->store('umkm_images', 'public');
+            }
+
+            // Associate current user and default fields
+            $data = $request->only([
+                'nama_usaha',
+                'category_id',
+                'alamat',
+                'latitude',
+                'longitude',
+                'deskripsi',
+                'jam_operasional',
+                'kontak',
+                'status',
+            ]);
+            $data['user_id'] = Auth::id();
+            $data['verified_by'] = null;
+            $data['foto_usaha'] = $fotoUsahaPath;
+
+            // Create UMKM record
+            $umkm = Umkm::create($data);
+
+            // Update user role to "umkm"
+            $request->user()->update(['role' => 'umkm']);
+
+            return redirect()->route('dashboard')
+                ->with('success', 'UMKM "' . $umkm->nama_usaha . '" berhasil daftarkan. menunggu verifikasi!');
+        } catch (\Throwable $th) {
+            return back()->with('error', 'Gagal menambahkan UMKM: ' . $th->getMessage());
+        }
     }
-}
 
 
 

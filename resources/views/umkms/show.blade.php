@@ -66,7 +66,7 @@
 
         <!-- Footer -->
         <div class="p-8 flex justify-end bg-gray-100 dark:bg-gray-800">
-        <a href="{{ route('umkms.index') }}" class="inline-block bg-indigo-600 text-dark px-4 py-2 rounded-lg shadow-md hover:bg-indigo-700 transition-colors duration-300">
+        <a href="{{ route('umkms.index') }}" class="inline-block bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-indigo-700 transition-colors duration-300">
         <i class="fas fa-arrow-left mr-2"></i>Kembali
     </a>
         </div>

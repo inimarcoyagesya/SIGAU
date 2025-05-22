@@ -29,10 +29,37 @@
         .hover-scale:hover {
             transform: translateY(-3px);
         }
+        .minimalist-bg {
+            background-color: #f8fafc;
+            background-image: 
+                linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+                linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+            background-size: 
+                50px 50px,
+                50px 50px,
+                10px 10px,
+                10px 10px;
+            background-position: 
+                -1px -1px,
+                -1px -1px,
+                -1px -1px,
+                -1px -1px;
+        }
+
+        .dark .minimalist-bg {
+            background-color: #0f172a;
+            background-image: 
+                linear-gradient(rgba(99, 102, 241, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 102, 241, 0.05) 1px, transparent 1px),
+                linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+        }
     </style>
 </head>
-<body class="font-sans antialiased bg-gray-50 dark:bg-gray-900">
-    <div class="min-h-screen map-pattern">
+<body class="font-sans antialiased">
+    <div class="min-h-screen minimalist-bg dark:bg-gray-900">
         <div class="relative flex flex-col items-center justify-center min-h-screen selection:bg-blue-600 selection:text-white">
             <!-- Navigation -->
             <nav class="w-full absolute top-0 gis-gradient shadow-lg">
@@ -65,11 +92,14 @@
 
             <!-- Main Content -->
             <main class="relative w-full max-w-7xl px-6 lg:px-8 mt-20">
-                <div class="text-center py-16">
-                    <h1 class="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-                        Selamat Datang di SIGAU
-                        <i class="fas fa-map-marked-alt text-blue-600 ml-2"></i>
-                    </h1>
+                <div class="text-center py-16 space-y-8">
+                    <div class="relative inline-block">
+                        <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-green-500 blur-2xl opacity-15 rounded-full"></div>
+                        <h1 class="relative text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+                            Selamat Datang di SIGAU
+                            <i class="fas fa-map-marked-alt text-blue-600 ml-2"></i>
+                        </h1>
+                    </div>
                     
                     <p class="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
                         Sistem Informasi Geografis terintegrasi untuk memetakan dan mengelola Usaha Mikro, Kecil, dan Menengah (UMKM) secara efisien.
