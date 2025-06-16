@@ -3,26 +3,43 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Inventory extends Model
 {
     protected $fillable = [
-        'umkm_id', 'nama_produk', 'harga', 
-        'stok', 'supplier', 'expired_date'
+        'umkm_id',
+        'nama_produk',
+        'deskripsi',
+        'stok',
+        'harga',
+        'satuan',
+        'expired_date',
+        'gambar'
     ];
 
-    public function getFormattedHargaAttribute()
+    protected $casts = [
+        'expired_date' => 'date',
+    ];
+
+    public function umkm(): BelongsTo
     {
-        return 'Rp ' . number_format($this->harga, 0, ',', '.');
+        return $this->belongsTo(Umkm::class);
     }
 
-
-    public function umkm() {
-        return $this->belongsTo(Umkm::class, 'umkm_id');
+    public function getStatusStokAttribute(): string
+    {
+        if ($this->stok > 20) return 'aman';
+        if ($this->stok > 5) return 'sedikit';
+        return 'hampir habis';
     }
 
-    public function transactionDetails()
+    public function getStatusWarnaAttribute(): string
     {
-        return $this->hasMany(TransactionDetail::class);
+        return match($this->status_stok) {
+            'aman' => 'green',
+            'sedikit' => 'yellow',
+            'hampir habis' => 'red',
+        };
     }
 }

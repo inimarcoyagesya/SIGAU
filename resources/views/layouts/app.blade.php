@@ -104,6 +104,14 @@
                                         <i class="fas fa-tools mr-2 icon-gradient"></i>
                                         {{ __('Facility') }}
                                     </x-dropdown-link>
+                                    <x-dropdown-link :href="route('admin.packages.index')" class="hover:bg-gray-100">
+                                        <i class="fas fa-box-open mr-2 icon-gradient"></i>
+                                        {{ __('Package') }}
+                                    </x-dropdown-link>
+                                    <x-dropdown-link :href="route('admin.transactions.index')" class="hover:bg-gray-100">
+                                        <i class="fas fa-dollar mr-2 icon-gradient"></i>
+                                        {{ __('Transaction') }}
+                                    </x-dropdown-link>
                                 </x-slot>
                             </x-dropdown>
                             @endif

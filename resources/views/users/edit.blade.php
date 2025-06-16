@@ -65,9 +65,8 @@
                                 name="status" 
                                 class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
                             >
-                                <option value="pending" {{ $user->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="verified" {{ $user->status == 'verified' ? 'selected' : '' }}>Verified</option>
-                                <option value="blocked" {{ $user->status == 'blocked' ? 'selected' : '' }}>Blocked</option>
+                                <option value="active" {{ $user->status == 'active' ? 'selected' : '' }}>active</option>
+                                <option value="banned" {{ $user->status == 'banned' ? 'selected' : '' }}>banned</option>
                             </select>
                             <x-input-error class="mt-2" :messages="$errors->get('status')" />
                         </div>

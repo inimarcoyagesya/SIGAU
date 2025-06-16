@@ -20,11 +20,12 @@ return new class extends Migration
             $table->decimal('latitude', 10, 8)->nullable();
             $table->decimal('longitude', 11, 8)->nullable();
             $table->text('deskripsi');
-            $table->string('status')->default('pending');
+            $table->string('status')->default('banned');
             $table->string('jam_operasional');
             $table->string('kontak');
             $table->string('foto_usaha')->nullable();
             $table->foreignId('verified_by')->nullable()->constrained('users');
+            $table->timestamp('subscription_expired_at')->nullable();
             $table->timestamps();
         });
     }

@@ -2,37 +2,35 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\InventoryExport;
 use App\Models\Inventory;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Client\Request;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class InventoryReportController extends Controller
 {
     public function generatePDF()
     {
-        // Pastikan data ada
         $inventories = Inventory::with('umkm')->get();
-        
-        if($inventories->isEmpty()) {
-            abort(404, 'Data inventory tidak ditemukan');
+
+        if ($inventories->isEmpty()) {
+            return redirect()->route('inventories.index')
+                             ->with('error', 'Tidak ada data inventori untuk dicetak.');
         }
+
+        $totalStok  = $inventories->sum('stok');
+        $totalNilai = $inventories->sum(fn($i) => $i->harga * $i->stok);
 
         $data = [
-            'title' => 'Laporan Inventori UMKM',
+            'title'       => 'Laporan Inventori UMKM',
             'inventories' => $inventories,
-            'totalStok' => $inventories->sum('stok'),
-            'totalNilai' => $inventories->sum(function($item) {
-                return $item->harga * $item->stok;
-            })
+            'totalStok'   => $totalStok,
+            'totalNilai'  => $totalNilai,
         ];
 
-        // Pastikan view ada
-        if (!view()->exists('inventories.report')) {
-            abort(404, 'Template laporan tidak ditemukan');
-        }
-
-        return PDF::loadView('inventories.report', $data)
-                 ->stream('laporan-inventori-'.date('Y-m-d').'.pdf');
+        return Pdf::loadView('inventories.report', $data)
+                  ->download('laporan-inventory-'.now()->format('Ymd').'.pdf');
     }
 
 //     public function selectedPDF(Request $request)
@@ -42,8 +40,7 @@ class InventoryReportController extends Controller
 //         'selected_ids.*' => 'integer|exists:inventories,id'
 //     ]);
 
-//     $selectedIds = $request->selected_ids;
-    
+//     $selectedIds = $request->input('selected_ids', []);
 //     $inventories = Inventory::with('umkm')
 //         ->whereIn('id', $selectedIds)
 //         ->get();
@@ -54,15 +51,21 @@ class InventoryReportController extends Controller
 //     }
 
 //     $data = [
-//         'title' => 'Laporan Inventori Terpilih',
+//         'title'       => 'Laporan Inventori Terpilih',
 //         'inventories' => $inventories,
-//         'totalStok' => $inventories->sum('stok'),
-//         'totalNilai' => $inventories->sum(function($item) {
-//             return $item->harga * $item->stok;
-//         })
+//         'totalStok'   => $inventories->sum('stok'),
+//         'totalNilai'  => $inventories->sum(fn($i) => $i->harga * $i->stok),
 //     ];
 
 //     return PDF::loadView('inventories.report', $data)
-//              ->stream('laporan-inventori-terpilih-'.date('Y-m-d').'.pdf');
+//              ->download('laporan-inventori-terpilih-'.now()->format('Y-m-d').'.pdf');
 // }
+
+    public function exportExcel(Request $request)
+    {
+        $ids = $request->input('selected_ids', []);
+        $fileName = 'inventories-'. now()->format('Ymd_His') .'.xlsx';
+
+        return Excel::download(new InventoryExport($ids), $fileName);
+    }
 }

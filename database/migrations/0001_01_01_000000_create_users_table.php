@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->enum('role', ['admin', 'umkm', 'public'])->default('public');
-            $table->enum('status', ['pending', 'verified', 'blocked'])->default('pending');
+            $table->enum('status', ['active', 'banned'])->default('banned');
             $table->timestamps();
         });
 

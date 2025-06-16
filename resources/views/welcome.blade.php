@@ -106,15 +106,9 @@
                     </p>
 
                     <div class="flex flex-col md:flex-row justify-center gap-6">
-                        <a href="{{ route('login') }}" class="gis-gradient hover:opacity-90 text-white px-8 py-4 rounded-xl text-lg font-semibold hover-scale transition">
-                            <i class="fas fa-sign-in-alt mr-2"></i>Masuk Sekarang
+                        <a href="{{ route('public.map') }}" class="gis-gradient hover:opacity-90 text-white px-8 py-4 rounded-xl text-lg font-semibold hover-scale transition">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Lihat Peta
                         </a>
-                        
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="bg-white dark:bg-gray-800 text-blue-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 px-8 py-4 rounded-xl text-lg font-semibold hover-scale transition">
-                                <i class="fas fa-user-plus mr-2"></i>Daftar Akun
-                            </a>
-                        @endif
                     </div>
                 </div>
 

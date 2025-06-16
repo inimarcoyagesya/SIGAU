@@ -3,26 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Models\Promotion;
+use App\Models\Umkm;
 use Illuminate\Http\Request;
 
 class PromotionController extends Controller
 {
-    public function index(Request $request)
+    public function store(Request $request)
     {
-        $search = $request->input('search');
-        
-        $promotions = Promotion::when($search, function ($query, $search) {
-            return $query->where('umkm_id', 'like', "%{$search}%")
-                         ->orWhere('judul_promosi', 'like', "%{$search}%")
-                         ->orWhere('deskripsi', 'like', "%{$search}%")
-                         ->orWhere('kode_kupon', 'like', "%{$search}%")
-                         ->orWhere('masa+berlaku', 'like', "%{$search}%")
-                         ->orWhere('link_iklan', 'like', "%{$search}%");
-        })->paginate(10);
+        $request->validate([
+            'umkm_id' => 'required|exists:umkms,id',
+            'judul_promosi' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'kode_kupon' => 'nullable|string|max:50',
+            'masa_berlaku' => 'nullable|date',
+            'link_iklan' => 'nullable|url'
+        ]);
 
-        // Hitung nomor urut
-        $i = ($promotions->currentPage() - 1) * $promotions->perPage() + 1;
+        // Validasi khusus untuk UMKM terverifikasi
+        $umkm = Umkm::find($request->umkm_id);
+        if (!$umkm->verified && $request->link_iklan) {
+            return back()->withErrors(['link_iklan' => 'Hanya untuk UMKM terverifikasi']);
+        }
 
-        return view('promotions.index', compact('promotions', 'i'));
+        Promotion::create($request->all());
+
+        return redirect()->back()->with('success', 'Promosi berhasil dibuat!');
     }
 }

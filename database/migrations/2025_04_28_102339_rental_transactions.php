@@ -13,13 +13,15 @@ return new class extends Migration
     {
         Schema::create('rental_transactions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('umkm_id')->constrained('umkms')->onDelete('cascade');
-            $table->dateTime('transaction_date');
-            $table->decimal('total_amount', 15, 2);
-            $table->string('status')->default('Pending');
+            $table->foreignId('umkm_id')->constrained('umkms')->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('package_id')->constrained('packages')->cascadeOnDelete();
+            $table->decimal('amount', 12, 2);
+            $table->enum('status', ['pending', 'paid', 'cancelled'])->default('pending');
+            $table->timestamp('paid_at')->nullable();
             $table->timestamps();
         });
+        
     }
 
     /**

@@ -68,9 +68,8 @@
                                 required
                             >
                                 <option value="" disabled selected>Select Status</option>
-                                <option value="pending" {{ old('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="verified" {{ old('status') == 'verified' ? 'selected' : '' }}>Verified</option>
-                                <option value="blocked" {{ old('status') == 'blocked' ? 'selected' : '' }}>Blocked</option>
+                                <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>active</option>
+                                <option value="banned" {{ old('status') == 'banned' ? 'selected' : '' }}>banned</option>
                             </select>
                             <x-input-error class="mt-2" :messages="$errors->get('status')" />
                         </div>

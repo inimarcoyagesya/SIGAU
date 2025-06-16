@@ -28,18 +28,38 @@
                                 >
                             </div>
 
-                            <!-- Form Cetak Selected -->
-                            <form id="pdfForm" method="POST" action="{{ route('inventories.selected-pdf') }}">
-                                @csrf
-                                <button type="submit" 
-                                    class="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                                    </svg>
-                                    Cetak Selected
-                                </button>
-                            </form>
+                            {{-- Tombol Cetak PDF --}}
+                        <div class="flex justify-end">
+                            <a href="{{ route('inventories.generate-pdf') }}"
+                            class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white rounded-lg transition-all duration-300 transform hover:scale-105">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                </svg>
+                                Export PDF
+                            </a>
                         </div>
+
+                        {{-- Notifikasi error --}}
+                        @if(session('error'))
+                            <div class="bg-red-100 text-red-700 p-4 rounded mb-6">
+                                {{ session('error') }}
+                            </div>
+                        @endif
+                        </div>
+
+                        <!-- Form Export Excel -->
+                        <form id="excelForm" method="POST" action="{{ route('inventories.export-excel') }}">
+                            @csrf
+                            <button type="submit"
+                                class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white rounded-lg transition-all duration-300 transform hover:scale-105">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                </svg>
+                                Export Excel
+                            </button>
+                        </form>
 
                         <div class="flex items-center gap-4">
                             <!-- Tambah Inventory Button -->
@@ -50,16 +70,7 @@
                                 <span>Tambah Baru</span>
                             </a>
                             
-                            <!-- Preview PDF Button -->
-                            <a href="{{ route('inventories.preview') }}" 
-                            class="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all duration-300 transform hover:scale-105"
-                            target="_blank">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                </svg>
-                                <span>Preview PDF</span>
-                            </a>
+                            
                         </div>
                     </div>
 
@@ -227,5 +238,28 @@
             while (tbody.firstChild) tbody.removeChild(tbody.firstChild);
             rows.forEach(row => tbody.appendChild(row));
         }
+
+        // Saat Excel form disubmit, clone semua checkbox yang checked ke dalamnya
+  document.getElementById('excelForm').addEventListener('submit', function(e) {
+    const form = this;
+    // hapus input lama
+    form.querySelectorAll('input[name="selected_ids[]"]').forEach(n => n.remove());
+
+    // ambil checked
+    const checked = document.querySelectorAll('.item-checkbox:checked');
+    if (checked.length === 0) {
+      e.preventDefault();
+      alert('Pilih minimal 1 item untuk diexport!');
+      return;
+    }
+
+    checked.forEach(cb => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'selected_ids[]';
+      input.value = cb.value;
+      form.appendChild(input);
+    });
+  });
     </script>
 </x-app-layout>

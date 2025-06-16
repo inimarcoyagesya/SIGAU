@@ -5,6 +5,24 @@
         </h2>
     </x-slot>
 
+    @push('styles')
+      <!-- Leaflet CSS -->
+      <link 
+        rel="stylesheet" 
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+        integrity="sha256‑sA+e2Nb4OyL0vEazj+1dQwY17oyF0Ynw+3UksdO+v3s=" 
+        crossorigin=""
+      />
+      <!-- Geocoder CSS (opsional) -->
+      <link 
+        rel="stylesheet" 
+        href="https://unpkg.com/leaflet-control-geocoder@1.13.0/dist/Control.Geocoder.css" 
+      />
+      <style>
+        #map { height: 300px; border-radius: .5rem; }
+      </style>
+    @endpush
+
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
@@ -59,32 +77,18 @@
                             <x-input-error class="mt-2" :messages="$errors->get('alamat')" />
                         </div>
 
-                        <!-- Latitude dan Longitude -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                            <div>
-                                <x-input-label for="latitude" :value="__('Latitude')" />
-                                <x-text-input 
-                                    id="latitude" 
-                                    name="latitude" 
-                                    type="text" 
-                                    class="mt-1 block w-full" 
-                                    :value="old('latitude', $umkm->latitude)" 
-                                    required 
-                                />
-                                <x-input-error class="mt-2" :messages="$errors->get('latitude')" />
+                        {{-- Map Picker --}}
+                        <div class="mb-6">
+                            <x-input-label :value="__('Lokasi UMKM')" />
+                            <div id="map" class="mt-2"></div>
+                            <div class="mt-2 text-sm text-gray-700 dark:text-gray-300">
+                            <strong>Koordinat terpilih:</strong>
+                            <span id="coords-display">{{ old('latitude', $umkm->latitude) }}, {{ old('longitude', $umkm->longitude) }}</span>
                             </div>
-                            <div>
-                                <x-input-label for="longitude" :value="__('Longitude')" />
-                                <x-text-input 
-                                    id="longitude" 
-                                    name="longitude" 
-                                    type="text" 
-                                    class="mt-1 block w-full" 
-                                    :value="old('longitude', $umkm->longitude)" 
-                                    required 
-                                />
-                                <x-input-error class="mt-2" :messages="$errors->get('longitude')" />
-                            </div>
+                            <input type="hidden" id="latitude" name="latitude" value="{{ old('latitude', $umkm->latitude) }}">
+                            <input type="hidden" id="longitude" name="longitude" value="{{ old('longitude', $umkm->longitude) }}">
+                            <x-input-error class="mt-2" :messages="$errors->get('latitude')" />
+                            <x-input-error class="mt-2" :messages="$errors->get('longitude')" />
                         </div>
 
                         <!-- Deskripsi -->
@@ -154,9 +158,8 @@
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
                                 required
                             >
-                                <option value="pending" {{ $umkm->status_verifikasi == 'pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="terverifikasi" {{ $umkm->status_verifikasi == 'terverifikasi' ? 'selected' : '' }}>Terverifikasi</option>
-                                <option value="ditolak" {{ $umkm->status_verifikasi == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
+                                <option value="active" {{ $umkm->status_verifikasi == 'active' ? 'selected' : '' }}>active</option>
+                                <option value="banned" {{ $umkm->status_verifikasi == 'banned' ? 'selected' : '' }}>banned</option>
                             </select>
                             <x-input-error class="mt-2" :messages="$errors->get('status_verifikasi')" />
                         </div>
@@ -175,4 +178,73 @@
             </div>
         </div>
     </div>
+    @push('scripts')
+      <!-- Leaflet JS -->
+      <script 
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+        integrity="sha256‑o9N1jG+gKFIlw4MqY+MUj6Rqd4hkH+4H7Eae4Mq4UIM=" 
+        crossorigin=""
+      ></script>
+      <!-- Geocoder JS (opsional) -->
+      <script src="https://unpkg.com/leaflet-control-geocoder@1.13.0/dist/Control.Geocoder.js"></script>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          // Baca initial coords (atau default Jakarta)
+          const initLat = parseFloat("{{ old('latitude', $umkm->latitude ?? -6.200000) }}");
+          const initLng = parseFloat("{{ old('longitude', $umkm->longitude ?? 106.816666) }}");
+
+          // Inisialisasi peta
+          const map = L.map('map').setView([initLat, initLng], 13);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+          }).addTo(map);
+
+          // Marker existing
+          let marker = L.marker([initLat, initLng], { draggable: true }).addTo(map);
+          // Jika marker dipindah via drag
+          marker.on('moveend', function(e) {
+            const { lat, lng } = e.target.getLatLng();
+            updateCoords(lat, lng);
+          });
+
+          // Klik untuk pasang marker baru
+          map.on('click', function(e) {
+            const { lat, lng } = e.latlng;
+            marker.setLatLng(e.latlng);
+            updateCoords(lat, lng);
+          });
+
+          // Geocoder (search)
+          const geocoder = L.Control.geocoder({
+            defaultMarkGeocode: false,
+            placeholder: 'Cari…'
+          })
+          .on('markgeocode', function(e) {
+            const c = e.geocode.center;
+            map.setView(c, 15);
+            marker.setLatLng(c);
+            updateCoords(c.lat, c.lng);
+          })
+          .addTo(map);
+
+          // Integrasi search-input manual
+          document.getElementById('search-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              geocoder.options.geocoder.geocode(this.value, results => {
+                if (results.length) geocoder.fire('markgeocode', { geocode: results[0] });
+              });
+            }
+          });
+
+          // Fungsi update hidden+display
+          function updateCoords(lat, lng) {
+            document.getElementById('latitude').value = lat.toFixed(6);
+            document.getElementById('longitude').value = lng.toFixed(6);
+            document.getElementById('coords-display').textContent = lat.toFixed(6) + ', ' + lng.toFixed(6);
+          }
+        });
+      </script>
+    @endpush
 </x-app-layout>

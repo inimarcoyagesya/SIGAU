@@ -6,26 +6,22 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('inventories', function (Blueprint $table) {
             $table->id();
             $table->foreignId('umkm_id')->constrained()->onDelete('cascade');
             $table->string('nama_produk');
-            $table->decimal('harga', 15, 2);
+            $table->text('deskripsi')->nullable();
             $table->integer('stok');
-            $table->string('supplier')->nullable();
+            $table->decimal('harga', 15, 2);
+            $table->string('satuan')->default('pcs');
             $table->date('expired_date')->nullable();
+            $table->string('gambar')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('inventories');

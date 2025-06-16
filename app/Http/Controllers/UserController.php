@@ -92,7 +92,7 @@ class UserController extends Controller
             'password' => 'nullable|string',
             'password_confirmation' => 'nullable|same:password',            
             'role' => 'required|in:admin,umkm,public',
-            'status' => 'required|in:pending,verified,blocked',
+            'status' => 'required|in:,active,banned',
         ]);
 
         try {

@@ -130,4 +130,5 @@ class InventoryController extends Controller
             return back()->with('error', 'Gagal menghapus produk: ' . $th->getMessage());
         }
     }
+    
 }

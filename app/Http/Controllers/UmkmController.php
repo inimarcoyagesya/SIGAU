@@ -59,7 +59,7 @@ class UmkmController extends Controller
             'jam_operasional' => 'required|string|max:255',
             'kontak' => 'required|string|max:255',
             'foto_usaha' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'status' => 'required|in:pending,terverifikasi,ditolak',
+            'status' => 'required|in:active,banned',
         ]);
 
         try {
@@ -134,7 +134,7 @@ class UmkmController extends Controller
             'jam_operasional' => 'required|string',
             'kontak' => 'required|string',
             'foto_usaha' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'status_verifikasi' => 'required|in:pending,terverifikasi,ditolak',
+            'status_verifikasi' => 'required|in:active,banned',
         ]);
 
         try {

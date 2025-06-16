@@ -33,11 +33,10 @@ class User extends Authenticatable
         return $this->hasMany(Search::class);
     }
 
-    public function rentalTransactions()
-    {
-        return $this->hasMany(RentalTransaction::class);
+    public function transaction() {
+        return $this->hasMany(Transaction::class);
     }
-
+    
     /**
      * The attributes that should be hidden for serialization.
      *

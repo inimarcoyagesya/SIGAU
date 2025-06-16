@@ -19,6 +19,7 @@ class Umkm extends Model
         'kontak',
         'foto_usaha',
         'verified_by',
+        'subscription_expired_at',
     ];
 
     public function user()
@@ -35,19 +36,20 @@ class Umkm extends Model
     {
         return $this->belongsTo(Category::class, 'category_id');
     }
-
-    public function rentalItems()
-    {
-        return $this->hasMany(RentalItem::class);
-    }
-
-    public function rentalTransactions()
-    {
-        return $this->hasMany(RentalTransaction::class);
-    }
     public function inventories()
     {
         // asumsinya foreign key di tabel inventories: umkm_id
         return $this->hasMany(Inventory::class, 'umkm_id');
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    // Tambahkan mutator untuk cek status aktif
+    public function getIsActiveAttribute()
+    {
+        return $this->subscription_expired_at && $this->subscription_expired_at->isFuture();
     }
 }
