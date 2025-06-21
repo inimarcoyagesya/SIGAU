@@ -8,7 +8,8 @@ use App\Http\Controllers\FacilityController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\Inventory2Controller;
 use App\Http\Controllers\InventoryReportController;
-use App\Http\Controllers\PenaltyController;
+use App\Http\Controllers\PremiumController;
+use App\Http\Controllers\UmkmPenaltyController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PromotionPageController;
 use App\Http\Controllers\PublicMapController;
@@ -34,6 +35,8 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['au
 //         ->name('admin.dashboard');
 // });
 
+Route::get('/premium', [PremiumController::class, 'index'])->name('umkm.premium');
+
 // Dashboard UMKM
 Route::middleware(['auth', 'verified', 'umkm.active'])->prefix('umkm')->group(function () {
     Route::get('/dashboard', [UmkmDashboardController::class, 'index'])->name('umkm.dashboard');
@@ -53,6 +56,10 @@ Route::middleware(['auth', 'verified', 'umkm.active'])->prefix('umkm')->group(fu
     Route::put('/transactions/{transaction}', [UmkmTransactionController::class, 'update'])->name('umkm.transactions.update');
     Route::delete('/transactions/{transaction}', [UmkmTransactionController::class, 'destroy'])->name('umkm.transactions.destroy');
 
+    Route::post('/premium/subscribe', [PremiumController::class, 'subscribe'])->name('premium.subscribe');
+    Route::get('/payment/{transaction}', [PremiumController::class, 'showPayment'])->name('payment.show');
+    Route::post('/payment/{transaction}/complete', [PremiumController::class, 'completePayment'])->name('payment.complete');
+
     Route::get('/inventories', [UmkmInventoryController::class, 'index'])->name('umkm.inventories.index');
     Route::get('/inventories/create', [UmkmInventoryController::class, 'create'])->name('umkm.inventories.create');
     Route::post('/inventories', [UmkmInventoryController::class, 'store'])->name('umkm.inventories.store');
@@ -66,14 +73,17 @@ Route::middleware(['auth', 'verified', 'umkm.active'])->prefix('umkm')->group(fu
     // Tracking Klik
     Route::post('/promotion/{promotion}/track-click', [PromotionPageController::class, 'trackClick'])->name('promotion.track-click');
 
-    Route::get('/umkm/profile', [UmkmProfileController::class, 'show'])->name('umkm.profile');
-    Route::put('/umkm/profile', [UmkmProfileController::class, 'update'])->name('umkm.profile.update');
-    Route::get ('/penalty',                [PenaltyController::class, 'index'])->name('penalty.index');
-    Route::post('/penalty',                [PenaltyController::class, 'store'])->name('penalty.store');
-    Route::put ('/penalty/{payment}/verify',[PenaltyController::class, 'verify'])->name('penalty.verify'); // admin only
+    // Profil UMKM
+    Route::get('/profile', [UmkmProfileController::class, 'edit'])->name('umkm.profile');
+    Route::put('/profile', [UmkmProfileController::class, 'update'])->name('umkm.profile.update');
+    Route::post('/profile/location', [UmkmProfileController::class, 'updateLocation'])->name('umkm.profile.location');
 
-    // Daftar paket
-    
+    Route::get('/umkm/penalty', [UmkmPenaltyController::class, 'show'])->name('umkm.penalty');
+    Route::post('/umkm/penalty/pay', [UmkmPenaltyController::class, 'pay'])->name('umkm.penalty.payment');
+
+    Route::get('/umkm/competitors', [UmkmController::class, 'competitors'])
+    ->name('umkm.competitors');
+
     // Konfirmasi & pembayaran
     Route::prefix('umkm')->group(function () {
     Route::get('/umkm/packages', [PackageController::class, 'index'])->name('packages.index');
@@ -89,6 +99,8 @@ Route::get('/umkm/transactions/{transaction}/excel', [TransactionController::cla
 
 // Dashboard Publik
 Route::get('/peta-umkm', [PublicMapController::class, 'index'])->name('public.map');
+// Route publik untuk profil UMKM
+Route::get('/umkm/{id}', [UmkmProfileController::class, 'show'])->name('umkm.public');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

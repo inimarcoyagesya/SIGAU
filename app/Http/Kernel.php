@@ -17,6 +17,7 @@ class Kernel extends ConsoleKernel
 
     protected $routeMiddleware = [
         'verified.umkm' => \App\Http\Middleware\CheckVerifiedUmkm::class,
+        'umkm.banned' => \App\Http\Middleware\UmkmBanned::class,
     ];
     
 }

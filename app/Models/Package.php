@@ -13,12 +13,12 @@ class Package extends Model
         'description',
         'price',
         'duration',
-        'is_active'
+        'status'
     ];
 
-    protected $casts = [
-        'is_active' => 'boolean'
-    ];
+    // protected $casts = [
+    //     'is_active' => 'boolean'
+    // ];
 
     // Accessor untuk format harga
     protected function formattedPrice(): Attribute
@@ -46,5 +46,10 @@ class Package extends Model
     public function transactions()
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class);
     }
 }

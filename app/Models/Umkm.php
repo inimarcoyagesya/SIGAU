@@ -14,6 +14,7 @@ class Umkm extends Model
         'latitude',
         'longitude',
         'deskripsi',
+        'rating',
         'status',
         'jam_operasional',
         'kontak',
@@ -21,6 +22,30 @@ class Umkm extends Model
         'verified_by',
         'subscription_expired_at',
     ];
+
+    protected $casts = [
+        'subscription_expired_at' => 'datetime',
+        'rating' => 'float',
+        'latitude' => 'float',
+        'longitude' => 'float',
+    ];
+
+    protected $appends = ['formatted_rating'];
+
+    public function getFormattedRatingAttribute()
+    {
+        return number_format($this->rating, 1);
+    }
+
+    public function getFotoUrlAttribute()
+    {
+        return $this->foto_usaha ? asset('storage/' . $this->foto_usaha) : null;
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
 
     public function user()
     {
@@ -51,5 +76,10 @@ class Umkm extends Model
     public function getIsActiveAttribute()
     {
         return $this->subscription_expired_at && $this->subscription_expired_at->isFuture();
+    }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
     }
 }

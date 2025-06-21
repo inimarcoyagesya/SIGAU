@@ -40,6 +40,91 @@
     color: transparent;
     display: inline-block;
     }
+    
+    /* Status badge */
+    .status-badge {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+    
+    .status-active {
+        background-color: #10B98120;
+        color: #10B981;
+    }
+    
+    .status-banned {
+        background-color: #EF444420;
+        color: #EF4444;
+    }
+    
+    /* UMKM badge */
+    .umkm-badge {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        padding: 2px 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 8px;
+    }
+    
+    /* Role badge */
+    .navbar-role-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            text-transform: uppercase;
+            
+            /* Warna baru yang sangat kontras */
+            background-color: rgba(0, 0, 0, 0.5); /* Latar belakang gelap semi-transparan */
+            color: white !important; /* Warna teks putih */
+            
+            /* Efek untuk meningkatkan keterbacaan */
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Hover effect */
+        .navbar-role-badge:hover {
+            background-color: rgba(0, 0, 0, 0.6);
+            transform: translateY(-1px);
+        }
+
+        /* Untuk mode gelap */
+        .dark .navbar-role-badge {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: #e5e7eb !important;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .dark .navbar-role-badge:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+    
+    .role-admin {
+        background-color: #8B5CF620;
+        color: #8B5CF6;
+    }
+    
+    .role-umkm {
+        background-color: #10B98120;
+        color: #10B981;
+    }
+    
+    /* Menu separator */
+    .menu-separator {
+        border-top: 1px solid #e5e7eb;
+        margin: 0.5rem 0;
+    }
+    .dark .menu-separator {
+        border-top: 1px solid #4b5563;
+    }
     </style>
     @stack('styles')
 </head>
@@ -52,7 +137,7 @@
                 <div class="flex justify-between h-16">
                     <div class="flex items-center">
                         <!-- Logo -->
-                        <a href="{{ route('dashboard') }}" class="flex items-center space-x-2">
+                        <a class="flex items-center space-x-2">
                             <i class="fas fa-map-marker-alt text-white text-2xl"></i>
                             <span class="text-white font-bold text-xl">SIGAU</span>
                         </a>
@@ -60,9 +145,15 @@
                         <!-- Navigation Links -->
                         <div class="hidden sm:ml-6 sm:flex sm:space-x-4">
                             @auth
-                            <x-nav-link :href="route('dashboard')" class="text-white hover:bg-blue-700/20">
-                                <i class="fas fa-tachometer-alt mr-2"></i>{{ __('Dashboard') }}
-                            </x-nav-link>
+                            @if(Auth::user()->role === 'umkm')
+                                <x-nav-link :href="route('umkm.dashboard')" class="text-white hover:bg-blue-700/20">
+                                    <i class="fas fa-tachometer-alt mr-2"></i>{{ __('Dashboard') }}
+                                </x-nav-link>
+                            @else
+                                <x-nav-link :href="route('dashboard')" class="text-white hover:bg-blue-700/20">
+                                    <i class="fas fa-tachometer-alt mr-2"></i>{{ __('Dashboard') }}
+                                </x-nav-link>
+                            @endif
 
                             <!-- Admin Dropdown -->
                             @if(Auth::user()->role === 'admin')
@@ -115,6 +206,54 @@
                                 </x-slot>
                             </x-dropdown>
                             @endif
+                            
+                            <!-- UMKM Dropdown -->
+                            @if(Auth::user()->role === 'umkm')
+                            <x-dropdown align="left" width="48">
+                                <x-slot name="trigger">
+                                    <button class="text-white flex items-center space-x-1 px-4 py-2 hover:bg-blue-700/20 rounded-lg transition-colors">
+                                        <i class="fas fa-store mr-1"></i>
+                                        <span>UMKM</span>
+                                        <i class="fas fa-chevron-down text-xs mt-1"></i>
+                                    </button>
+                                </x-slot>
+
+                                <x-slot name="content">
+                                    <!-- Status UMKM -->
+                                    <div class="px-4 py-2 flex items-center">
+                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300 mr-2">Status:</span>
+                                        <div class="status-badge @if(auth()->user()->status === 'active') status-active @else status-banned @endif">
+                                            <i class="fas fa-circle mr-1"></i>
+                                            {{ auth()->user()->status === 'active' ? 'Aktif' : 'Diblokir' }}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="menu-separator"></div>
+                                    
+                                    <!-- Menu Items -->
+                                    <x-dropdown-link :href="route('umkm.dashboard')" class="hover:bg-gray-100">
+                                        <i class="fas fa-tachometer-alt mr-2 text-blue-500"></i>
+                                        {{ __('Dashboard') }}
+                                    </x-dropdown-link>
+                                    <x-dropdown-link :href="route('umkm.profile')" class="hover:bg-gray-100">
+                                        <i class="fas fa-store mr-2 text-green-500"></i>
+                                        {{ __('Profil UMKM') }}
+                                    </x-dropdown-link>
+                                    <x-dropdown-link :href="route('umkm.inventories.index')" class="hover:bg-gray-100">
+                                        <i class="fas fa-box mr-2 text-amber-500"></i>
+                                        {{ __('Kelola Stok') }}
+                                    </x-dropdown-link>
+                                    <x-dropdown-link :href="route('umkm.transactions.index')" class="hover:bg-gray-100">
+                                        <i class="fas fa-receipt mr-2 text-purple-500"></i>
+                                        {{ __('Transaksi') }}
+                                    </x-dropdown-link>
+                                    <x-dropdown-link :href="route('umkm.promotion.show', ['id' => auth()->user()->umkm->id ?? 0])" class="hover:bg-gray-100">
+                                        <i class="fas fa-bullhorn mr-2 text-red-500"></i>
+                                        {{ __('Promosi') }}
+                                    </x-dropdown-link>
+                                </x-slot>
+                            </x-dropdown>
+                            @endif
                             @endauth
                         </div>
                     </div>
@@ -137,6 +276,9 @@
                                         <span class="text-sm font-medium text-white dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                                             {{ Auth::user()->name }}
                                         </span>
+                                        <span class="navbar-role-badge @if(Auth::user()->role === 'admin') role-admin @else role-umkm @endif">
+                                            {{ Auth::user()->role }}
+                                        </span>
                                         <svg class="w-4 h-4 text-gray-500 dark:text-gray-400 group-hover:text-blue-500 transition-transform transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                         </svg>
@@ -149,6 +291,16 @@
                                 <div class="px-4 py-3 border-b dark:border-gray-700">
                                     <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ Auth::user()->name }}</p>
                                     <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ Auth::user()->email }}</p>
+                                    <div class="mt-1 flex items-center">
+                                        <span class="role-badge @if(Auth::user()->role === 'admin') role-admin @else role-umkm @endif">
+                                            {{ Auth::user()->role }}
+                                        </span>
+                                        @if(Auth::user()->role === 'umkm' && Auth::user()->umkm)
+                                            <span class="umkm-badge">
+                                                {{ Auth::user()->umkm->nama_usaha }}
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
 
                                 <!-- Menu Items -->
@@ -160,15 +312,31 @@
                                         <span class="transform transition-transform group-hover:translate-x-1">{{ __('Profile') }}</span>
                                     </x-dropdown-link>
 
-                                    <!-- Tombol Registrasi UMKM -->
+                                    <!-- Tombol Registrasi UMKM (hanya untuk user biasa) -->
+                                    @if(Auth::user()->role === 'public')
                                     <x-dropdown-link :href="route('umkms.create')" class="group flex items-center px-4 py-2 text-sm transition-all duration-200 hover:bg-green-50 dark:hover:bg-gray-700">
                                         <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-green-600 dark:group-hover:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                         </svg>
                                         <span class="transform transition-transform group-hover:translate-x-1">{{ __('Registrasi UMKM') }}</span>
                                     </x-dropdown-link>
+                                    @endif
+                                    
+                                    <!-- Menu khusus UMKM -->
+                                    @if(Auth::user()->role === 'umkm')
+                                    <div class="menu-separator"></div>
+                                    <x-dropdown-link :href="route('umkm.profile')" class="group flex items-center px-4 py-2 text-sm transition-all duration-200 hover:bg-green-50 dark:hover:bg-gray-700">
+                                        <i class="fas fa-store mr-3 text-gray-500 dark:text-gray-400 group-hover:text-green-600 dark:group-hover:text-green-400"></i>
+                                        <span class="transform transition-transform group-hover:translate-x-1">{{ __('Profil UMKM') }}</span>
+                                    </x-dropdown-link>
+                                    <x-dropdown-link :href="route('umkm.inventories.index')" class="group flex items-center px-4 py-2 text-sm transition-all duration-200 hover:bg-amber-50 dark:hover:bg-gray-700">
+                                        <i class="fas fa-box mr-3 text-gray-500 dark:text-gray-400 group-hover:text-amber-600 dark:group-hover:text-amber-400"></i>
+                                        <span class="transform transition-transform group-hover:translate-x-1">{{ __('Kelola Stok') }}</span>
+                                    </x-dropdown-link>
+                                    @endif
 
                                     <!-- Logout -->
+                                    <div class="menu-separator"></div>
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
                                         <x-dropdown-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();" class="group flex items-center px-4 py-2 text-sm transition-all duration-200 hover:bg-red-50 dark:hover:bg-gray-700">

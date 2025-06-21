@@ -36,6 +36,10 @@ class User extends Authenticatable
     public function transaction() {
         return $this->hasMany(Transaction::class);
     }
+
+    public function subscription() {
+        return $this->hasMany(Subscription::class);
+    }
     
     /**
      * The attributes that should be hidden for serialization.
